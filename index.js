@@ -1,7 +1,7 @@
 'use strict'
 const setupDatabase = require('./lib/db')
-const setupAgentModel = require('./models/agent')
-const setupMetricModel = require('./models/metric')
+const setupAgentModel = require('./models/Agent')
+const setupMetricModel = require('./models/Metric')
 //const setupAgent = require('./lib/agent')
 //const setupMetric = require('./lib/metric')
 const defaults = require('defaults')

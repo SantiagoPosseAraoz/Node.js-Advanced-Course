@@ -1,5 +1,5 @@
-#Title
-##another title
+# Welcome
+## How to use
 ```js
 
 const setupDatabase = require("platziverse-db")
