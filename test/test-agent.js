@@ -14,10 +14,18 @@ let MetricStub = {
   belongsTo: sinon.spy(),
 };
 
+let single = Object.assign({}, agentFixtures.single);
 let id = 1;
+let uuid = "yyy-yyy-yyy";
 let AgentStub = null;
 let db = null;
 let sandbox = null;
+
+let uuidArgs = {
+  where: {
+    uuid,
+  },
+};
 
 test.beforeEach(async () => {
   sandbox = sinon.createSandbox();
@@ -25,10 +33,21 @@ test.beforeEach(async () => {
     hasMany: sandbox.spy(),
   };
 
+  //Model findOne stub
+  AgentStub.findOne = sandbox.stub();
+  AgentStub.findOne.withArgs(uuidArgs).returns(Promise.resolve(single));
+
+  //Model findById stub
   AgentStub.findById = sandbox.stub();
   AgentStub.findById
     .withArgs(id)
     .returns(Promise.resolve(agentFixtures.byId(id)));
+
+  //Model create stub
+  AgentStub.update = sandbox.stub();
+  AgentStub.update
+    .withArgs(single, uuidArgs)
+    .returns(Promise.resolve(agentFixtures.byUuid(uuid)));
 
   const setupDatabase = proxyquire("../", {
     "./models/Agent": () => AgentStub,
@@ -64,6 +83,18 @@ test.serial("Agent#findById", async (t) => {
 
   t.true(AgentStub.findById.called, "Find by ID has been called");
   t.true(AgentStub.findById.calledOnce, "Find by ID has been called ONCE");
-  t.true(AgentStub.findById.calledWith(id), "Should be called with a specific ID");
+  t.true(
+    AgentStub.findById.calledWith(id),
+    "Should be called with a specific ID"
+  );
   t.deepEqual(agent, agentFixtures.byId(id), "Should be the same");
+});
+
+test.serial("Agent#CreateOrUpdate - existing", async (t) => {
+  let agent = await db.Agent.createOrUpdate(single);
+
+  t.true(AgentStub.findOne.called, "Agent.findOne should be called");
+  t.true(AgentStub.findOne.calledTwice, "Agent.findOne should be called twice");
+  t.true(AgentStub.update.calledOnce, "Agent.update should be called once");
+  t.deepEqual(agent, single, "Agent should be the same");
 });
