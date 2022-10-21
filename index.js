@@ -3,7 +3,7 @@ const setupDatabase = require('./lib/db')
 const setupAgentModel = require('./models/Agent')
 const setupMetricModel = require('./models/Metric')
 const setupAgent = require('./lib/agent')
-// const setupMetric = require('./lib/metric')
+const setupMetric = require('./lib/metric')
 const defaults = require('defaults')
 
 module.exports = async function (config) {
@@ -35,8 +35,7 @@ module.exports = async function (config) {
   }
 
   const Agent = setupAgent(AgentModel)
-  // const Metric = setupMetric(MetricModel, AgentModel)
-  const Metric = {}
+  const Metric = setupMetric(MetricModel, AgentModel)
 
   return {
     Agent,
